@@ -1,3 +1,4 @@
+//Copyright 2022©, Yerio Janssen, All rights reserved.
 using System.Collections.Generic;
 using UnityEngine;
 

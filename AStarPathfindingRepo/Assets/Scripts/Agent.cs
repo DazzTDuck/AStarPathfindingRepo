@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+//Copyright 2022©, Yerio Janssen, All rights reserved.
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,17 +25,11 @@ public class Agent : MonoBehaviour
     private bool hasDestination = false;
     private bool atDestination = false;
     private int currentPathNodeIndex = 0;
-    
 
-    private void Update()
-    {
-        //for debugging
-         if(Input.GetMouseButtonDown(0))
-         {
-             SetDestination(moveTo.position);
-         }
-    }
-
+    /// <summary>
+    /// Gets the path from the pathfinding handler and starts moving the agent to the target
+    /// </summary>
+    /// <param name="targetPos">Target where the agent needs to move to</param>
     public void SetDestination(Vector3 targetPos)
     {
         atDestination = false;
@@ -45,14 +38,21 @@ public class Agent : MonoBehaviour
         currentPathNodeIndex = 0;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        //for debugging
+         if(Input.GetMouseButtonDown(0))
+         {
+             SetDestination(moveTo.position);
+         }
+
         if (!hasDestination) 
             return;
 
         Vector3 moveToPos = path[currentPathNodeIndex];
         moveToPos.y = transform.position.y;
 
+        //checks distance of player and the node it's moving to
         if (Vector3.Distance(transform.position, moveToPos) < minimalDistance)
         {
             if (currentPathNodeIndex + 1 > path.Count - 1)
@@ -67,16 +67,20 @@ public class Agent : MonoBehaviour
         }
         else
         {
-            //move player to position
+            //move player to node position
             var position = transform.position;
             position = Vector3.MoveTowards(position, moveToPos, moveSpeed);
             transform.position = position;
 
-            //rotation
+            //rotation towards the node the agent is moving to
             Quaternion newRotation = Quaternion.LookRotation(moveToPos - position, Vector3.up);
             transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
         }
     }
+    /// <summary>
+    /// Returns if agent is at the end of the path
+    /// </summary>
+    /// <returns></returns>
     public bool GetIfAtDestination()
     {
         return atDestination;

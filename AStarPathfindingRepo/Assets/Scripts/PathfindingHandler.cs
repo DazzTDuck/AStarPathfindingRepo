@@ -1,3 +1,4 @@
+//Copyright 2022©, Yerio Janssen, All rights reserved.
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,9 +22,16 @@ public class PathfindingHandler : MonoBehaviour
     private Pathfinding pathfinding;
     private void Start()
     {
+        //on start automatically make the grid for pathfinding
         pathfinding = new Pathfinding(gridWidth, gridHeight, cellSize, gridOffset);
     }
 
+    /// <summary>
+    /// Returns a list of Vector3 with all the positions of the calculated path
+    /// </summary>
+    /// <param name="currentPos"></param>
+    /// <param name="targetPos"></param>
+    /// <returns></returns>
     public List<Vector3> GetFinalPathFromGrid(Vector3 currentPos, Vector3 targetPos)
     {
         pathfinding.GetGrid().GetGridPositionXY(currentPos, out int xStart, out int yStart);
@@ -44,12 +52,8 @@ public class PathfindingHandler : MonoBehaviour
             int x = pathNode.x;
             int y = (int)cellSize;
             int z = pathNode.y;
-            
-            //check again for collisions
-            //pathNode.isWalkable = !Physics.CheckSphere(pathfinding.GetGrid().GetWorldPositionWithY(x, (int)cellSize / 2, z), cellSize, notWalkableLayerMask);
 
-            if (!finalPath.Contains(pathfinding.GetGrid()
-                .GetWorldPositionWithY(x, y, z)))
+            if (!finalPath.Contains(pathfinding.GetGrid().GetWorldPositionWithY(x, y, z)))
             {     
                 var pos = pathfinding.GetGrid().GetWorldPositionWithY(x, y, z);
                 finalPath.Add(pos);
