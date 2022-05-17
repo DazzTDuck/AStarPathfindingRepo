@@ -43,10 +43,12 @@ public class PathfindingHandler : MonoBehaviour
 
         if (yEnd < 0) 
             yEnd = 0;
-            
+       
+        UpdateGrid();
         var pathNodeList = pathfinding.FindPath(xStart, yStart, xEnd, yEnd);
         var finalPath = new List<Vector3>();
 
+        //transfers the path node list to the final list of Vector3 positions
         foreach (var pathNode in pathNodeList)
         {
             int x = pathNode.x;
@@ -62,11 +64,16 @@ public class PathfindingHandler : MonoBehaviour
         return finalPath;
     }
 
+    /// <summary>
+    /// returns current cell size
+    /// </summary>
+    /// <returns></returns>
     public float GetCellSize()
     {
         return cellSize;
     }
 
+    //show grid and path on screen for debug purposes 
     private void OnDrawGizmos()
     {
         if (!debugGrid || pathfinding == null)
@@ -88,6 +95,9 @@ public class PathfindingHandler : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Makes sure the collisions gets updated for each path calculation
+    /// </summary>
     public void UpdateGrid()
     {
         pathfinding.UpdateGridCollisions();

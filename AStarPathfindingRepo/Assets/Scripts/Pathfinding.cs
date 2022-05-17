@@ -17,6 +17,13 @@ public class Pathfinding
     
     private LayerMask notWalkable = LayerMask.GetMask("NotWalkable");
 
+    /// <summary>
+    /// Generates grid
+    /// </summary>
+    /// <param name="width">grid width</param>
+    /// <param name="height">grid height</param>
+    /// <param name="cellSize">grid cell size</param>
+    /// <param name="offset">grid position offset</param>
     public Pathfinding(int width, int height, float cellSize, Vector3 offset)
     {
         this.cellSize = cellSize;
@@ -25,6 +32,14 @@ public class Pathfinding
         grid = new GridSystem<PathNode>(width, height, cellSize, offset, (g, x, y, b) => new PathNode(g, x, y, b));
     }
     
+    /// <summary>
+    /// Returns list of path nodes that make up the calculated path 
+    /// </summary>
+    /// <param name="startX">Start x coordinate</param>
+    /// <param name="startY">Start y coordinate</param>
+    /// <param name="endX">End x coordinate</param>
+    /// <param name="endY">End y coordinate</param>
+    /// <returns></returns>
     public List<PathNode> FindPath(int startX, int startY, int endX, int endY)
     {
         PathNode startNode = grid.GetGridObjectValue(startX, startY);
@@ -33,6 +48,7 @@ public class Pathfinding
         openList = new List<PathNode>{startNode};
         closedList = new List<PathNode>();
         
+        //resets node values
         for (int x = 0; x < grid.GetWidth(); x++) {
             for (int y = 0; y < grid.GetHeight(); y++)
             {
@@ -44,12 +60,15 @@ public class Pathfinding
             }
         }
 
+        //calculate costs of start node
         startNode.gCost = 0;
         startNode.hCost = CalculateDistance(startNode, endNode);
         startNode.CalculateFCost();
 
+        //A* algorithm 
         while (openList.Count > 0)
         {
+            //get lowest fCost node and puts it in the closed list
             PathNode currentNode = GetLowestFCostNode(openList);
             if (currentNode == endNode)
             {
@@ -60,6 +79,8 @@ public class Pathfinding
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
+            //goes trough the neighbors to calculate their cost and to save...
+            //where they came from till they've gone trough the entire grid 
             foreach (PathNode neighborNode in GetNeighborList(currentNode))
             {
                 if(closedList.Contains(neighborNode)) continue;
@@ -89,6 +110,11 @@ public class Pathfinding
         return null;
     }
 
+    /// <summary>
+    /// Returns a list of all the neighbors around a node
+    /// </summary>
+    /// <param name="currentNode">Node to get neighbors from</param>
+    /// <returns></returns>
     private List<PathNode> GetNeighborList(PathNode currentNode)
     {
         List<PathNode> neighborList = new List<PathNode>();
@@ -113,10 +139,16 @@ public class Pathfinding
         return neighborList;
     }
 
+    /// <summary>
+    /// Returns a list with the path to the end node 
+    /// </summary>
+    /// <param name="endNode">Node which is the end target</param>
+    /// <returns></returns>
     private List<PathNode> CalculatePath(PathNode endNode)
     {
-        List<PathNode> path = new List<PathNode>();
-        path.Add(endNode);
+        //goes from the endNode, then checks that cameFromNode and saves it in the path and makes that the current node,
+        //this gets repeated till it has reached the start. Then the path gets reversed to make it from start to finish.
+        List<PathNode> path = new List<PathNode>{endNode};
         PathNode currentNode = endNode;
         
         while (currentNode.cameFromNode != null)
@@ -129,6 +161,12 @@ public class Pathfinding
         return path;
     }
 
+    /// <summary>
+    /// Returns the distance cost to move from A to B
+    /// </summary>
+    /// <param name="a">First node</param>
+    /// <param name="b">Second node</param>
+    /// <returns></returns>
     private int CalculateDistance(PathNode a, PathNode b)
     {
         int xDistance = Mathf.Abs(a.x - b.x);
@@ -137,6 +175,11 @@ public class Pathfinding
         return MOVE_DIAGONAL_COST * Mathf.Min(xDistance, yDistance) + MOVE_STRAIGHT_COST * remaining;
     }
 
+    /// <summary>
+    /// Returns the Node with the lowest total Fcost
+    /// </summary>
+    /// <param name="pathNodeList">List of which nodes to check</param>
+    /// <returns></returns>
     private PathNode GetLowestFCostNode(List<PathNode> pathNodeList)
     {
         PathNode lowestFCostNode = pathNodeList[0];
@@ -147,11 +190,19 @@ public class Pathfinding
         }
         return lowestFCostNode;
     }
+
+    /// <summary>
+    /// Returns the current grid
+    /// </summary>
+    /// <returns></returns>
     public GridSystem<PathNode> GetGrid()
     {
         return grid;
     }
     
+    /// <summary>
+    /// Updates the collisions inside the grid to update if cells can be walked on or not
+    /// </summary>
     public void UpdateGridCollisions()
     {
         for (int x = 0; x < grid.GetWidth(); x++) {

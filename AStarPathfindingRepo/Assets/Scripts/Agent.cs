@@ -91,8 +91,6 @@ public class Agent : MonoBehaviour
     {
         if (!debugPath)
             return;
-        
-        var position = transform.position;
 
         if (pathfindingHandler == null || path == null) 
             return;
