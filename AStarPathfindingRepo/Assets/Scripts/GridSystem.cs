@@ -1,4 +1,4 @@
-//Copyright 202©, Yerio Janssen, All rights reserved.
+//Copyright 2020 ©, Yerio Janssen, All rights reserved.
 using System;
 using UnityEngine;
 
